@@ -8,6 +8,7 @@ namespace VenelinIliev\Borica3ds;
 
 use VenelinIliev\Borica3ds\Enums\TransactionType;
 use VenelinIliev\Borica3ds\Exceptions\ParameterValidationException;
+use VenelinIliev\Borica3ds\RequestTypes\HtmlForm;
 
 /**
  * Class Sale
@@ -18,52 +19,12 @@ class SaleRequest extends Request implements RequestInterface
 {
 
     /**
-     * @var string
-     */
-    protected $merchantUrl;
-
-    /**
-     * @var string
-     */
-    protected $merchantName;
-
-    /**
-     * @var string
-     */
-    protected $emailAddress;
-
-    /**
-     * @var string
-     */
-    protected $countryCode;
-
-    /**
-     * @var string
-     */
-    protected $merchantGMT;
-
-    /**
-     * @var string
-     */
-    protected $adCustBorOrderId;
-
-    /**
-     * @var string
-     */
-    protected $billAddrLine1;
-
-    /**
-     * @var string
-     */
-    protected $shipAddrLine1;
-
-
-    /**
      * Sale constructor.
      */
     public function __construct()
     {
         $this->setTransactionType(TransactionType::SALE());
+        $this->setRequestType(new HtmlForm());
     }
 
     /**
@@ -74,38 +35,8 @@ class SaleRequest extends Request implements RequestInterface
      */
     public function send()
     {
-        $html = $this->generateForm();
-
-        $html .= '<script>
-            document.getElementById("borica3dsRedirectForm").submit()
-        </script>';
-
+        $html = parent::send();
         die($html);
-    }
-
-    /**
-     * Generate HTML hidden form
-     *
-     * @return string
-     * @throws Exceptions\SignatureException|ParameterValidationException
-     */
-    public function generateForm()
-    {
-        $html = '<form 
-	        action="' . $this->getEnvironmentUrl() . '" 
-	        style="display: none;" 
-	        method="POST" 
-	        id="borica3dsRedirectForm"
-        >';
-
-        $inputs = $this->getData();
-        foreach ($inputs as $key => $value) {
-            $html .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
-        }
-
-        $html .= '</form>';
-
-        return $html;
     }
 
     /**
@@ -123,6 +54,7 @@ class SaleRequest extends Request implements RequestInterface
                 'TRTYPE' => $this->getTransactionType()->getValue(),
                 'COUNTRY' => $this->getCountryCode(),
                 'CURRENCY' => $this->getCurrency(),
+                'LANG' => $this->getLang(),
 
                 'MERCH_GMT' => $this->getMerchantGMT(),
                 'MERCHANT' => $this->getMerchantId(),
@@ -136,12 +68,15 @@ class SaleRequest extends Request implements RequestInterface
                 'TIMESTAMP' => $this->getSignatureTimestamp(),
 
                 'TERMINAL' => $this->getTerminalID(),
-                'BACKREF' => $this->getBackRefUrl(),
+
+                'BILL_ADDR_LINE1' => $this->getBillAddrLine1(),
+                'SHIP_ADDR_LINE1' => $this->getShipAddrLine1(),
 
                 'M_INFO' => $this->getMInfo(),
 
             ]) + $this->generateAdCustBorOrderId();
     }
+
 
     /**
      * Generate signature of data
@@ -410,61 +345,6 @@ class SaleRequest extends Request implements RequestInterface
     public function setAdCustBorOrderId($adCustBorOrderId)
     {
         $this->adCustBorOrderId = $adCustBorOrderId;
-        return $this;
-    }
-
-
-    /**
-     * Get billing address line 1
-     *
-     * @return string
-     */
-    public function getBillAddrLine1()
-    {
-        return $this->billAddrLine1;
-    }
-
-    /**
-     * Set billing address line 1
-     *
-     * @param string $billAddrLine1 Първи ред на адреса за фактуриране.
-     *
-     * @return SaleRequest
-     * @throws ParameterValidationException
-     */
-    public function setBillAddrLine1($billAddrLine1)
-    {
-        if (mb_strlen($billAddrLine1) > 50) {
-            throw new ParameterValidationException('Billing address line 1 must be maximum 50 characters');
-        }
-        $this->billAddrLine1 = $billAddrLine1;
-        return $this;
-    }
-
-    /**
-     * Get shipping address line 1
-     *
-     * @return string
-     */
-    public function getShipAddrLine1()
-    {
-        return $this->shipAddrLine1;
-    }
-
-    /**
-     * Set shipping address line 1
-     *
-     * @param string $shipAddrLine1 Първи ред на адреса за доставка.
-     *
-     * @return SaleRequest
-     * @throws ParameterValidationException
-     */
-    public function setShipAddrLine1($shipAddrLine1)
-    {
-        if (mb_strlen($shipAddrLine1) > 50) {
-            throw new ParameterValidationException('Shipping address line 1 must be maximum 50 characters');
-        }
-        $this->shipAddrLine1 = $shipAddrLine1;
         return $this;
     }
 }
