@@ -48,6 +48,17 @@ class SaleRequest extends Request implements RequestInterface
     protected $adCustBorOrderId;
 
     /**
+     * @var string
+     */
+    protected $billAddrLine1;
+
+    /**
+     * @var string
+     */
+    protected $shipAddrLine1;
+
+
+    /**
      * Sale constructor.
      */
     public function __construct()
@@ -399,6 +410,61 @@ class SaleRequest extends Request implements RequestInterface
     public function setAdCustBorOrderId($adCustBorOrderId)
     {
         $this->adCustBorOrderId = $adCustBorOrderId;
+        return $this;
+    }
+
+
+    /**
+     * Get billing address line 1
+     *
+     * @return string
+     */
+    public function getBillAddrLine1()
+    {
+        return $this->billAddrLine1;
+    }
+
+    /**
+     * Set billing address line 1
+     *
+     * @param string $billAddrLine1 Първи ред на адреса за фактуриране.
+     *
+     * @return SaleRequest
+     * @throws ParameterValidationException
+     */
+    public function setBillAddrLine1($billAddrLine1)
+    {
+        if (mb_strlen($billAddrLine1) > 50) {
+            throw new ParameterValidationException('Billing address line 1 must be maximum 50 characters');
+        }
+        $this->billAddrLine1 = $billAddrLine1;
+        return $this;
+    }
+
+    /**
+     * Get shipping address line 1
+     *
+     * @return string
+     */
+    public function getShipAddrLine1()
+    {
+        return $this->shipAddrLine1;
+    }
+
+    /**
+     * Set shipping address line 1
+     *
+     * @param string $shipAddrLine1 Първи ред на адреса за доставка.
+     *
+     * @return SaleRequest
+     * @throws ParameterValidationException
+     */
+    public function setShipAddrLine1($shipAddrLine1)
+    {
+        if (mb_strlen($shipAddrLine1) > 50) {
+            throw new ParameterValidationException('Shipping address line 1 must be maximum 50 characters');
+        }
+        $this->shipAddrLine1 = $shipAddrLine1;
         return $this;
     }
 }

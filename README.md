@@ -83,6 +83,8 @@ $saleRequest = (new SaleRequest())
             'cc'=>'359', // Country code
             'subscriber'=>'8939999888', // Subscriber number
         ),
+        'billAddrLine1'=>'711 5th Ave', // Billing Address Line 1 // Max 50 Chars
+        'shipAddrLine1'=>'10 Columbus Cir Space 207' // Shipping Address Line 1 // Max 50 Chars
         'threeDSRequestorChallengeInd'=>'04', //  Optional for Additional Authentication
     ))
     //->setSigningSchemaMacGeneral(); // use MAC_GENERAL
